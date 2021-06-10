@@ -4,24 +4,24 @@ const {PORT, ADDRESS} = require('./config');
 
 const uuid = uuidv4();
 
-const [instrumentWanted] = process.argv.slice(2);
-const instrumentType = [
-    {type: 'piano', sound: 'ti-ta-ti'},
-    {type: 'trumpet', sound: 'pouet'},
-    {type: 'flute', sound: 'trulu'},
-    {type: 'violin', sound: 'gzi-gzi'},
-    {type: 'drum', sound: 'boum-boum'},
-];
+const [type] = process.argv.slice(2); //instrument wanted
+const instruments = new Map();
+instruments.set('piano', 'ti-ta-ti');
+instruments.set('trumpet', 'pouet');
+instruments.set('flute', 'trulu');
+instruments.set('violin', 'gzi-gzi');
+instruments.set('drum', 'boum-boum');
 
-const instrument = instrumentType.find(i => i.type === instrumentWanted.toLowerCase());
-if (!instrument) throw new Error(`No instrument '${instrumentWanted}' found.`);
+const sound = instruments.get(type);
+if (!sound) throw new Error(`No instrument '${type}' found.`);
 
 
 const socket = dgram.createSocket('udp4');
 setInterval(() => {
     const payload = JSON.stringify({
         uuid,
-        ...instrument,
+        type,
+        sound,
         timestamp: Date.now()
     });
     const message = Buffer.from(payload);
