@@ -104,7 +104,7 @@ When you connect to the TCP interface of the **Auditor**, you should receive an 
 | #  | Topic |
 | --- | --- |
 |Question | How can we represent the system in an **architecture diagram**, which gives information both about the Docker containers, the communication protocols and the commands? |
-| | *Insert your diagram here...* |
+| | ![diagramme](images/OrchestraDiagram.svg) |
 |Question | Who is going to **send UDP datagrams** and **when**? |
 | | The musician program every second since its creation|
 |Question | Who is going to **listen for UDP datagrams** and what should happen when a datagram is received? |
@@ -132,7 +132,7 @@ When you connect to the TCP interface of the **Auditor**, you should receive an 
 |Question | In Node.js, how can we execute a function on a **periodic** basis? |
 | | In javascript we use `setIntervall(callbackFunction, timeMs)`  |
 |Question | In Node.js, how can we **emit UDP datagrams**? |
-| | via a UDP socket thanks to the `dgram` node API |
+| | via a UDP socket thanks to the `dgram` node API. We must first create a socket: `const socket = dgram.createSocket('udp4');` then we can emit data: ` socket.send(message, 0, message.length, PORT, ADDRESS, callback)`|
 |Question | In Node.js, how can we **access the command line arguments**? |
 | | `process.argv` returns an array with all the arguments. Warning the two first arguments are `node` and `<fileLocation>`|
 
@@ -152,7 +152,7 @@ When you connect to the TCP interface of the **Auditor**, you should receive an 
 |Question | How do we **stop/kill** one running container?  |
 | | `docker kill <container_name>` |
 |Question | How can we check that our running containers are effectively sending UDP datagrams?  |
-| | *Enter your response here...* //TODO |
+| | We can use wireshark to monitor the containers communication |
 
 
 ## Task 4: implement an "auditor" Node.js application
@@ -160,15 +160,15 @@ When you connect to the TCP interface of the **Auditor**, you should receive an 
 | #  | Topic |
 | ---  | ---  |
 |Question | With Node.js, how can we listen for UDP datagrams in a multicast group? |
-| | First create an UDP dgram bind it on the UDP Port and the correct multicast address. Then use the `on` to do something when it receive datagram   |
+| | First create an UDP dgram: `const s = dgram.createSocket('udp4');`. Then bind it on the UDP Port and the correct multicast address: `s.bind(UDP_PORT)`. Finally use `s.on('message', (msg, source) => {/*Do Stuff*/})` to do something when it receive datagram   |
 |Question | How can we use the `Map` built-in object introduced in ECMAScript 6 to implement a **dictionary**?  |
 | | To differentiate all the instruments we use the instrument uuid as the key and the instrument itself as the value |
 |Question | How can we use the `Moment.js` npm module to help us with **date manipulations** and formatting?  |
-| | We not use Moment.js we use build-in Date object and it auto-json-stringify date into ISO 8601 format when we use `JSON.stringify()`   |
+| | We not use Moment.js we use build-in Date object and it auto-json-stringify date into ISO 8601 format when we use `JSON.stringify()`. In our case this package isn't necessary but if we wanted some more complex date manipulation we'll had use it   |
 |Question | When and how do we **get rid of inactive players**?  |
-| | Every second the auditor verify all instruments in its list and delete the ones where their `activeSince` value is more than 5 seconds distant from the current time |
+| | Every second the auditor verify all instruments in its list and delete the ones where their `lastEared` value is more than 5 seconds distant from the current time |
 |Question | How do I implement a **simple TCP server** in Node.js?  |
-| | We use the `net` build-in node package with the `createServer` function and the callback function which will accept connections and send the list of active instruments to the client |
+| | We use the `net` build-in node package with the `createServer` function and the callback function which will accept connections and send the list of active instruments to the client. Of course we need to `listen` to the TCP port |
 
 
 ## Task 5: package the "auditor" app in a Docker image
