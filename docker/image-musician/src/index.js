@@ -1,35 +1,38 @@
 const dgram = require('dgram');
 const {v4: uuidv4} = require('uuid');
 const {PORT, ADDRESS} = require('./config');
+const {LOG} = require('./logger');
 
 const uuid = uuidv4();
 
-const [instrumentWanted] = process.argv.slice(2);
-const instrumentType = [
-    {type: 'piano', sound: 'ti-ta-ti'},
-    {type: 'trumpet', sound: 'pouet'},
-    {type: 'flute', sound: 'trulu'},
-    {type: 'violin', sound: 'gzi-gzi'},
-    {type: 'drum', sound: 'boum-boum'},
-];
+const [type] = process.argv.slice(2); //instrument wanted /!\ case sensitive
+const instrumentSounds = new Map([
+    ['piano', 'ti-ta-ti'],
+    ['trumpet', 'pouet'],
+    ['flute', 'trulu'],
+    ['violin', 'gzi-gzi'],
+    ['drum', 'boum-boum']
+]);
 
-const instrument = instrumentType.find(i => i.type === instrumentWanted.toLowerCase());
-if (!instrument) throw new Error(`No instrument '${instrumentWanted}' found.`);
+const sound = instrumentSounds.get(type);
+if (!sound) throw new Error(`No instrument '${type}' found.`);
 
 
 const socket = dgram.createSocket('udp4');
+const activeSince = new Date();
 setInterval(() => {
     const payload = JSON.stringify({
         uuid,
-        ...instrument,
-        timestamp: Date.now()
+        type,
+        sound,
+        activeSince
     });
     const message = Buffer.from(payload);
     socket.send(message, 0, message.length, PORT, ADDRESS, (error) => {
         if (error) {
-            console.log(error);
+            LOG.ERROR(error);
             return;
         }
-        console.log(`Sending payload ${payload} via port ${socket.address().port}`);
+        LOG.INFO(`Sending payload ${payload} via port ${socket.address().port}`);
     })
 }, 1000)
