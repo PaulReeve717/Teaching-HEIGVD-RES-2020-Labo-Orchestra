@@ -162,7 +162,7 @@ When you connect to the TCP interface of the **Auditor**, you should receive an 
 |Question | With Node.js, how can we listen for UDP datagrams in a multicast group? |
 | | First create an UDP dgram: `const s = dgram.createSocket('udp4');`. Then bind it on the UDP Port and the correct multicast address: `s.bind(UDP_PORT)`. Finally use `s.on('message', (msg, source) => {/*Do Stuff*/})` to do something when it receive datagram   |
 |Question | How can we use the `Map` built-in object introduced in ECMAScript 6 to implement a **dictionary**?  |
-| | To differentiate all the instruments we use the instrument uuid as the key and the instrument itself as the value |
+| | There's 4 useful methods for map. `get(key)`: will return the object referenced by the key or undefined if the key isn't present, `set(key, value)`: Add/replace the value linked by the key, `delete(key)`: Erase the value and the key of the Map, `as(key)` return true if the key is in the map, false otherwise. In our case, we use a Map to store the relations between an instrument type and its sound and vice-versa and we pass a iterator in the constructor which automatically instantiate the map instead of use multiple `set` |
 |Question | How can we use the `Moment.js` npm module to help us with **date manipulations** and formatting?  |
 | | We not use Moment.js we use build-in Date object and it auto-json-stringify date into ISO 8601 format when we use `JSON.stringify()`. In our case this package isn't necessary but if we wanted some more complex date manipulation we'll had use it   |
 |Question | When and how do we **get rid of inactive players**?  |
