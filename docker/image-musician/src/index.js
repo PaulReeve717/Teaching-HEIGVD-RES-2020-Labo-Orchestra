@@ -23,14 +23,13 @@ const activeSince = new Date();
 setInterval(() => {
     const payload = JSON.stringify({
         uuid,
-        type,
         sound,
         activeSince
     });
     const message = Buffer.from(payload);
     socket.send(message, 0, message.length, PORT, ADDRESS, (error) => {
         if (error) {
-            LOG.ERROR(error);
+            LOG.ERROR(error.toString());
             return;
         }
         LOG.INFO(`Sending payload ${payload} via port ${socket.address().port}`);
