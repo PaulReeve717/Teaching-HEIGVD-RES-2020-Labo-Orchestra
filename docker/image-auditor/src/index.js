@@ -5,6 +5,14 @@ const {LOG} = require("./logger");
 const s = dgram.createSocket('udp4');
 const instruments = new Map();
 
+const instrumentSounds = new Map([
+    ['ti-ta-ti','piano'],
+    ['pouet','trumpet'],
+    ['trulu','flute'],
+    ['gzi-gzi','violin'],
+    ['boum-boum','drum']
+]);
+
 s.bind(UDP_PORT, () => {
     LOG.INFO("Joining multicast group");
     s.addMembership(UDP_ADDRESS);
@@ -15,8 +23,12 @@ s.on('message', (msg, source) => {
     try {
         const payload = JSON.parse(msg.toString('utf8'));
 
+        const instrument = instrumentSounds.get(payload.sound);
+
+        if(!instrument) throw new Error(`Oups i dont know this sound (${payload.sound})`)
+
         if (!instruments.has(payload.uuid)) {
-            LOG.WARN(`Ho a new ${payload.type}[${payload.uuid}] arrive !`); //for yellow color :)
+            LOG.WARN(`Ho a new ${instrument}[${payload.uuid}] arrive !`); //for yellow color :)
         }
 
         /**
@@ -26,13 +38,13 @@ s.on('message', (msg, source) => {
         instruments.set(payload.uuid, {
             data: {
                 uuid: payload.uuid,
-                instrument: payload.type,
+                instrument,
                 activeSince: payload.activeSince
             },
             lastEared: new Date()
         })
     } catch (error) {
-        LOG.ERROR('An error occurred', error);
+        LOG.ERROR('An error occurred', error.toString());
     }
 });
 
